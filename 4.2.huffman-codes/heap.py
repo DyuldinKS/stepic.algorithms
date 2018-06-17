@@ -51,7 +51,7 @@ class Heap:
 
         return min_elem
 
-    def len(self):
+    def __len__(self):
         return len(self.list)
 
     def is_empty(self):

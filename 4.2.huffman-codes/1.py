@@ -6,18 +6,9 @@ from functools import total_ordering
 # val with reversed frequency comparison
 @total_ordering
 class Node():
-    def __init__(self, val, freq):
+    def __init__(self, val='', freq=0):
         self.val = val
         self.freq = freq
-        self.left = None
-        self.right = None
-
-    def set_children(self, ch1, ch2=None):
-        self.left = ch1
-        self.right = ch2
-
-    def is_leaf(self):
-        return len(self.val) == 1
 
     def __add__(self, other):
         return Node(self.val + other.val, self.freq + other.freq)
@@ -47,36 +38,27 @@ def gen_heap(items):
     return heap
 
 
-def build_tree(heap):
-    while heap.len() > 1:
-        c1 = heap.extract_min()
-        c2 = heap.extract_min()
-        parent = c1 + c2
-        parent.set_children(c1, c2)
+def use_prefix(codes, node, prefix):
+    for char in node.val:
+        codes[char] = prefix + (codes.get(char) or '')
+
+
+def gen_codes(heap):
+    codes = {}
+    while len(heap) > 1:
+        parent = Node()
+        for i in range(0, 2):
+            node = heap.extract_min()
+            parent += node
+            use_prefix(codes, node, str(i))
+
         heap.insert(parent)
 
-    return heap.extract_min()
-
-
-def gen_codes(node, code='', codes={}):
-    if(node.left):
-        gen_codes(node.left, code + '0', codes)
-
-    if(node.right):
-        gen_codes(node.right, code + '1', codes)
-
-    if node.left == node.right and node.left is None:
-        codes[node.val] = code or '0'
+    chars = heap.extract_min().val
+    if len(chars) == 1:
+        codes[chars] = '0'
 
     return codes
-
-
-def encode(s, codes):
-    encoded = ''
-    for char in s:
-        encoded += codes[char]
-
-    return encoded
 
 
 def huffman(s):
@@ -85,13 +67,11 @@ def huffman(s):
     frequencies = Counter(s)
     chars = frequencies.items()
     heap = gen_heap(chars)
-    parent = build_tree(heap)
-    codes = gen_codes(parent)
-    res = encode(s, codes)
+    codes = gen_codes(heap)
+    res = ''.join(codes[char] for char in s)
 
     print(len(codes), len(res))
-    for (char, freq) in chars:
-        print(char + ': ' + codes[char])
+    [print('{}: {}'.format(k, codes[k])) for k in codes]
     print(res)
 
 

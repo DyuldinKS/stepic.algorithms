@@ -24,6 +24,7 @@ class Heap_max:
         else:
             return None
 
+
     def sift_up(self, i=None):
         elem_index = i if i is not None else len(self.list) - 1
         parent_index = self._get_parent_index(elem_index)

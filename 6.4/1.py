@@ -1,19 +1,17 @@
-def merge_counting_inversions(a, b):
-    i, j = 0, 0
+def merge_counting_inversions(a, b, invs = 0):
     merged = []
-    inversions = 0
 
-    while i < len(a) and j < len(b):
-        if a[i] <= b[j]:
-            merged.append(a[i])
-            i += 1
+    while a and b:
+        if a[-1] <= b[-1]:
+            merged.append(b.pop())
         else:
-            merged.append(b[j])
-            j += 1
-            inversions += len(a) - i
+            merged.append(a.pop())
+            invs += len(b)
 
-    merged.extend(a[i::] if i < len(a) else b[j::])
-    return merged, inversions
+    merged.reverse()
+    merged = (a or b) + merged
+
+    return merged, invs
 
 
 def count_inversions(xs):
